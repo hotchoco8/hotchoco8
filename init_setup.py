@@ -52,14 +52,14 @@ def setup_kubernetes_repo():
     # APT 패키지 목록 업데이트
     run_command("sudo apt-get update", "Failed to update package lists after adding Kubernetes repo.")
 
-    print("✅ Kubernetes APT repository has been set up successfully!")
+    print("Kubernetes APT repository has been set up successfully!")
 
 # ===== [2. Swap 비활성화] =====
 def disable_swap():
     print("Disabling Swap...")
     run_command("sudo swapoff -a", "Failed to disable swap temporarily.")
     run_command("sudo sed -i '/swap/d' /etc/fstab", "Failed to remove swap entry from fstab.")
-    print("✅ Swap has been successfully disabled and cleaned up!")
+    print("Swap has been successfully disabled and cleaned up!")
 
 # ===== [3. runc 설치] =====
 def install_runc():
@@ -70,7 +70,7 @@ def install_runc():
     print(f"Installing runc {runc_version} from GitHub...")
     run_command(f"sudo wget {runc_url} -O /usr/local/sbin/runc", "Failed to download runc.")
     run_command("sudo chmod +x /usr/local/sbin/runc", "Failed to set executable permission for runc.")
-    print("✅ runc has been installed successfully!")
+    print("runc has been installed successfully!")
 
 # ===== [4. CNI Plugin 설치] =====
 def install_cni_plugin():
@@ -82,7 +82,7 @@ def install_cni_plugin():
     run_command("sudo mkdir -p /opt/cni/bin", "Failed to create CNI plugin directory.")
     run_command(f"sudo wget {cni_url} -O /tmp/cni-plugins.tgz", "Failed to download CNI plugins.")
     run_command("sudo tar Cxzvf /opt/cni/bin /tmp/cni-plugins.tgz", "Failed to extract CNI plugins.")
-    print("✅ CNI plugins have been installed successfully!")
+    print("CNI plugins have been installed successfully!")
 
 # ===== [5. Containerd 설치 및 설정] =====
 def install_containerd():
@@ -139,7 +139,7 @@ def install_kubernetes_tools():
         print(f"⚠️ Specified Kubernetes version {default_version} not found. Using latest available version: {available_versions[0]}")
         matching_version = available_versions[0]
 
-    print(f"✅ Installing Kubernetes version: {matching_version}")
+    print(f"Installing Kubernetes version: {matching_version}")
 
     run_command(f"sudo apt-get install -y kubelet={matching_version} kubeadm={matching_version} kubectl={matching_version}",
                 "Failed to install Kubernetes tools.")
@@ -147,7 +147,7 @@ def install_kubernetes_tools():
     run_command("sudo apt-mark hold kubeadm kubelet kubectl", "Failed to hold Kubernetes packages.")
 
     run_command("sudo systemctl restart kubelet", "Failed to restart kubelet service.")
-    print("✅ Kubernetes installed successfully!")
+    print("Kubernetes installed successfully!")
 
 # ===== [6. crictl 설치] =====
 def install_crictl():
@@ -159,7 +159,7 @@ def install_crictl():
     run_command(f"sudo wget {crictl_url} -O /tmp/crictl.tar.gz", "Failed to download crictl.")
     run_command("sudo tar Cxzvf /usr/local/bin /tmp/crictl.tar.gz", "Failed to extract crictl.")
 
-    # ✅ crictl이 containerd와 연결될 수 있도록 설정 추가
+    # crictl이 containerd와 연결될 수 있도록 설정 추가
     crictl_config = """
     runtime-endpoint: unix:///run/containerd/containerd.sock
     image-endpoint: unix:///run/containerd/containerd.sock
@@ -168,7 +168,7 @@ def install_crictl():
     """
     run_command(f"echo '{crictl_config}' | sudo tee /etc/crictl.yaml > /dev/null", "Failed to create crictl.yaml")
 
-    print("✅ crictl has been installed and configured successfully!")
+    print("crictl has been installed and configured successfully!")
 
 # ===== [7. nerdctl 설치] =====
 def install_nerdctl():
@@ -179,7 +179,7 @@ def install_nerdctl():
     print(f"Installing nerdctl {nerdctl_version} from GitHub...")
     run_command(f"sudo wget {nerdctl_url} -O /tmp/nerdctl.tar.gz", "Failed to download nerdctl.")
     run_command("sudo tar Cxzvf /usr/local/bin /tmp/nerdctl.tar.gz", "Failed to extract nerdctl.")
-    print("✅ nerdctl has been installed successfully!")
+    print("nerdctl has been installed successfully!")
 
 # ===== [8. Kernel 모듈 및 네트워크 설정] =====
 def configure_kernel_modules():
@@ -196,17 +196,17 @@ def configure_kernel_modules():
     run_command(f"echo '{sysctl_config}' | sudo tee /etc/sysctl.d/k8s.conf", "Failed to configure sysctl parameters.")
 
     run_command("sudo sysctl --system", "Failed to apply sysctl settings.")
-    print("✅ Kernel modules and sysctl parameters configured successfully!")
+    print("Kernel modules and sysctl parameters configured successfully!")
 
 def download_pause_image():
     """Pause 컨테이너 이미지 다운로드"""
     pause_image = VERSIONS["pause_image"] 
     run_command(f"sudo nerdctl --namespace=k8s.io pull {pause_image}", "Failed to pull pause image.")
-    print("✅ Pause image has been downloaded successfully!")
+    print("Pause image has been downloaded successfully!")
 
 # ===== [메인 함수] =====
 def main():
-    print("🚀 Starting Kubernetes Node Setup...")
+    print("Starting Kubernetes Node Setup...")
 
     setup_kubernetes_repo()
     disable_swap()
@@ -219,7 +219,7 @@ def main():
     install_nerdctl()
     download_pause_image()
 
-    print("🎉 Kubernetes Node Setup Completed Successfully!")
+    print("Kubernetes Node Setup Completed Successfully!")
 
 if __name__ == "__main__":
     main()
